@@ -6,10 +6,7 @@
   "ComponentPublisher": "thirumal.ai",
   "ComponentConfiguration": {
     "DefaultConfiguration": {
-      
-      "AppDefaultPath": "$HOME/ipcdir",
-      
-      
+      "IPCRootPath": "$HOME/ipcdir",
       "accessControl": {
         "aws.greengrass.ipc.pubsub": {
           "com.thirumal.ai.ipc.publishToIoTCore": {
@@ -36,6 +33,16 @@
       }
     }
   },
+  "ComponentDependencies": {
+    "aws.greengrass.Nucleus": {
+      "VersionRequirement": ">=2.0.3 <2.1.0",
+      "DependencyType": "SOFT"
+    },
+    "aws.greengrass.Cli": {
+      "VersionRequirement": ">=2.0.3 <2.1.0",
+      "DependencyType": "SOFT"
+    }
+  },
   "Manifests": [
     { 
       "Lifecycle": {
@@ -46,7 +53,7 @@
           },
           "run": {
             "RequiresPrivilege": "true",
-            "script": "python3 -m venv {configuration:AppDefaultPath}/ipcvenv \n source {configuration:AppDefaultPath}/ipcvenv/bin/activate\n python3 -u {artifacts:path}/ipc_greengrass.py"
+            "script": "python3 -m venv {configuration:/IPCRootPath}/ipcvenv \n source {configuration:/IPCRootPath}/ipcvenv/bin/activate\n python3 -u {artifacts:path}/ipc_greengrass.py"
           },        
           "shutdown": {
             "RequiresPrivilege": "true",
