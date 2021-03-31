@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
         op = ipc_client.new_publish_to_iot_core()
         op.activate(model.PublishToIoTCoreRequest(
-            topic_name="my/iot/{}/telemetry".format(os.getenv("AWS_IOT_THING_NAME")),
+            topic_name="my/iot/raspi4gg/telemetry",
             qos=model.QOS.AT_LEAST_ONCE,
             payload=json.dumps(telemetry_data).encode(),
         ))

@@ -1,7 +1,8 @@
 {
   "RecipeFormatVersion": "2020-01-25",
   "ComponentName": "com.thirumal.ai.ipc.publishToIoTCore",
-  "ComponentVersion": "1.0.0",
+  "ComponentVersion": "1.0.4",
+  "ComponentType": "aws.greengrass.generic",
   "ComponentDescription": "A component that publishes messages.",
   "ComponentPublisher": "thirumal.ai",
   "ComponentConfiguration": {
@@ -44,34 +45,35 @@
     }
   },
   "Manifests": [
-    { 
+    {
       "Lifecycle": {
-          "install": {
-            "RequiresPrivilege": "true",
-            "script": "apt-get update --quiet && apt-get --yes install python3 python3-pip && pip3 install awsiotsdk\n",
-            "timeout": "900"
-          },
-          "run": {
-            "RequiresPrivilege": "true",
-            "script": "python3 -m venv {configuration:/IPCRootPath}/ipcvenv \n source {configuration:/IPCRootPath}/ipcvenv/bin/activate\n python3 -u {artifacts:path}/ipc_greengrass.py"
-          },        
-          "shutdown": {
-            "RequiresPrivilege": "true",
-            "script": "deactivate"
-          }        
-      
+        "install": {
+          "RequiresPrivilege": "true",
+          "script": "apt-get update --quiet && apt-get --yes install python3 python3-pip cmake libssl-dev && python3 -m venv {configuration:/IPCRootPath}/ipcvenv \n source {configuration:/IPCRootPath}/ipcvenv/bin/activate\n pip3 install awsiotsdk==1.5.4\n",
+          "timeout": "900"
+        },
+        "run": {
+          "RequiresPrivilege": "true",
+          "script": "python3 -u {artifacts:path}/ipc_greengrass.py"
+        },
+        "shutdown": {
+          "RequiresPrivilege": "true",
+          "script": "deactivate"
+        }
       },
       "Artifacts": [
-          {
-            "Uri": "s3://taiyalu-iot-bucket/ipc_greengrass.py",
-            "Unarchive": "NONE",
-            "Permission": {
-              "Read": "OWNER",
-              "Execute": "NONE"
-            }
+        {
+          "Uri": "s3://taiyalu-iot-bucket/ipc_greengrass.py",
+          "Digest": "t/UB+1DlNHwu9FqkHr7ANO+NxP2oxLLO6v3zFI2Ydh4=",
+          "Algorithm": "SHA-256",
+          "Unarchive": "NONE",
+          "Permission": {
+            "Read": "OWNER",
+            "Execute": "NONE"
           }
-          
-        ]
+        }
+      ]
     }
-  ]
+  ],
+  "Lifecycle": {}
 }
