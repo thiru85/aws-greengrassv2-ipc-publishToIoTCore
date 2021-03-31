@@ -1,0 +1,70 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.thirumal.ai.ipc.publishToIoTCore",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "A component that publishes messages.",
+  "ComponentPublisher": "thirumal.ai",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      
+      "AppDefaultPath": "$HOME/ipcdir",
+      
+      
+      "accessControl": {
+        "aws.greengrass.ipc.pubsub": {
+          "com.thirumal.ai.ipc.publishToIoTCore": {
+            "policyDescription": "Allows access to publish to all topics.",
+            "operations": [
+              "aws.greengrass#PublishToTopic"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        },
+        "aws.greengrass.ipc.mqttproxy": {
+          "com.thirumal.ai.ipc.publishToIoTCore": {
+            "policyDescription": "Allows access to publish to all AWS IoT Core topics.",
+            "operations": [
+              "aws.greengrass#PublishToIoTCore"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Manifests": [
+    { 
+      "Lifecycle": {
+          "install": {
+            "RequiresPrivilege": "true",
+            "script": "apt-get update --quiet && apt-get --yes install python3 python3-pip && pip3 install awsiotsdk\n",
+            "timeout": "900"
+          },
+          "run": {
+            "RequiresPrivilege": "true",
+            "script": "python3 -m venv {configuration:AppDefaultPath}/ipcvenv \n source {configuration:AppDefaultPath}/ipcvenv/bin/activate\n python3 -u {artifacts:path}/ipc_greengrass.py"
+          },        
+          "shutdown": {
+            "RequiresPrivilege": "true",
+            "script": "deactivate"
+          }        
+      
+      },
+      "Artifacts": [
+          {
+            "Uri": "s3://taiyalu-iot-bucket/ipc_greengrass.py",
+            "Unarchive": "NONE",
+            "Permission": {
+              "Read": "OWNER",
+              "Execute": "NONE"
+            }
+          }
+          
+        ]
+    }
+  ]
+}
