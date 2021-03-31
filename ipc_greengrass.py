@@ -26,13 +26,15 @@ if __name__ == '__main__':
 
         op = ipc_client.new_publish_to_iot_core()
         op.activate(model.PublishToIoTCoreRequest(
-            topic_name="my/iot/raspi4gg/telemetry",
+            topic_name="thirumal.ai/raspi4gg/telemetry",
             qos=model.QOS.AT_LEAST_ONCE,
             payload=json.dumps(telemetry_data).encode(),
         ))
         try:
             result = op.get_response().result(timeout=5.0)
             print("successfully published message:", result)
+            print(telemetry_data)
+            print()
         except Exception as e:
             print("failed to publish message:", e)
 
