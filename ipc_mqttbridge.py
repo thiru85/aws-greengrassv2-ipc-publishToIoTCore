@@ -7,14 +7,45 @@ import json
 import time
 import os
 import random
+import socket
+
+import paho.mqtt.client as mqtt #import the client1
+import paho.mqtt.subscribe as subscribe
+import paho.mqtt.publish as publish
 
 import awsiot.greengrasscoreipc
 import awsiot.greengrasscoreipc.model as model
 
 if __name__ == '__main__':
-    ipc_client = awsiot.greengrasscoreipc.connect()
     
+    ipc_client = awsiot.greengrasscoreipc.connect()
+
+    hostname = socket.gethostname()
+    
+    ip_address = socket.gethostbyname(hostname)
+       
+    msg = subscribe.simple("localData/#", hostname=ip_address)
+    localTopic=msg.topic
+    messageBody=msg.payload
+    print("Received %s on topic: %s" % (messageBody, localTopic))
+    #This is assuming the topic being published is of the form n/n/n, like localdata/esp32-1/temperature etc
+    topicSplitter=localTopic.split('/')
+
+    cloudTopic="cloudData/"+topicSplitter[1]+"/"+topicSplitter[2]
+
+
     while True:
+        
+        msg = subscribe.simple("localData/#", hostname=ip_address)
+        
+        localTopic=msg.topic
+        messageBody=msg.payload
+        
+        print('Received %s on topic: %s' % (messageBody, localTopic))
+
+        # This is assuming the topic being published is of the form n/n/n, like localdata/esp32-1/temperature etc
+        topicSplitter=localTopic.split('/')
+
         telemetry_data = {
             "timestamp": int(round(time.time() * 1000)),
             "battery_state_of_charge": random.randint(40,50),
@@ -22,11 +53,12 @@ if __name__ == '__main__':
                 "longitude": random.uniform(45,60),
                 "latitude": random.uniform(45,70),
             },
+            "sensor_data":random.choice(topicSplitter),
         }
 
         op = ipc_client.new_publish_to_iot_core()
         op.activate(model.PublishToIoTCoreRequest(
-            topic_name="thirumal.ai/raspi4gg/telemetry",
+            topic_name=cloudTopic,
             qos=model.QOS.AT_LEAST_ONCE,
             payload=json.dumps(telemetry_data).encode(),
         ))
